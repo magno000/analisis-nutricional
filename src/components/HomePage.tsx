@@ -3,6 +3,8 @@ import { ImageUpload } from './ImageUpload';
 import { LoadingSpinner } from './LoadingSpinner';
 import { NutritionCard } from './NutritionCard';
 import { Search, ArrowLeft, Camera, Lightbulb, Utensils } from 'lucide-react';
+// NUEVO: Importar el analizador nutricional que ya existe
+import { nutritionAnalyzer } from '../utils/nutritionAnalyzer';
 
 interface NutritionData {
   name: string;
@@ -17,27 +19,44 @@ export const HomePage: React.FC = () => {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [nutritionData, setNutritionData] = useState<NutritionData | null>(null);
+  const [error, setError] = useState<string | null>(null); // NUEVO: Estado para manejar errores
 
   const handleImageSelect = (file: File) => {
     setSelectedImage(file);
     setNutritionData(null);
+    setError(null); // NUEVO: Limpiar errores previos
   };
 
   const handleRemoveImage = () => {
     setSelectedImage(null);
     setNutritionData(null);
+    setError(null); // NUEVO: Limpiar errores
   };
 
   const handleAnalyze = async () => {
     if (!selectedImage) return;
 
     setIsAnalyzing(true);
+    setError(null); // NUEVO: Limpiar errores previos
     
+    try {
+      // CORREGIDO: Usar el nutritionAnalyzer real en lugar de datos simulados
+      const result = await nutritionAnalyzer.analyzeImage(selectedImage);
+      setNutritionData(result);
+    } catch (error) {
+      // NUEVO: Manejo de errores
+      setError(error instanceof Error ? error.message : 'Error desconocido al analizar la imagen');
+      console.error('Error en análisis:', error);
+    } finally {
+      setIsAnalyzing(false);
+    }
+
+    // ELIMINADO: Ya no necesitamos estos datos simulados
+    /*
     // Simular análisis con IA (esto se conectará con Supabase/OpenAI después)
     await new Promise(resolve => setTimeout(resolve, 3000));
     
     // Datos de ejemplo para demostración
-	/*
     const mockData: NutritionData = {
       name: "Ensalada César con Pollo",
       weight: 320,
@@ -46,21 +65,17 @@ export const HomePage: React.FC = () => {
       fat: 22,
       carbs: 35,
     };
-    */
-	
-	// Análisis real - usa OpenAI para analizar la imagen
-	const result = await nutritionAnalyzer.analyzeImage(selectedImage);
-
-	
-	
+    
     setNutritionData(mockData);
     setIsAnalyzing(false);
+    */
   };
 
   const handleNewAnalysis = () => {
     setSelectedImage(null);
     setNutritionData(null);
     setIsAnalyzing(false);
+    setError(null); // NUEVO: Limpiar errores
   };
 
   if (isAnalyzing) {
@@ -121,6 +136,22 @@ export const HomePage: React.FC = () => {
           información nutricional detallada al instante
         </p>
       </div>
+
+      {/* NUEVO: Mostrar errores si los hay */}
+      {error && (
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <div className="flex">
+            <div className="text-red-600 font-medium">Error:</div>
+            <div className="ml-2 text-red-700">{error}</div>
+          </div>
+          <button
+            onClick={() => setError(null)}
+            className="mt-2 text-sm text-red-600 hover:text-red-800 underline"
+          >
+            Cerrar
+          </button>
+        </div>
+      )}
 
       {/* Tips */}
       <div className="bg-gradient-to-r from-blue-50 to-emerald-50 rounded-2xl p-6 border border-blue-100">
