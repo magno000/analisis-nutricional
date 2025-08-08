@@ -27,19 +27,6 @@ export const HomePage: React.FC = () => {
     setError(null);
   };
 
-  const handleRemoveImage = () => {
-    setSelectedImage(null);
-    setNutritionData(null);
-    setError(null);
-  };
-
-  const handleAnalyze = async () => {
-    if (!selectedImage) return;
-
-    setIsAnalyzing(true);
-    setError(null);
-    
-    try {
       const result = await nutritionAnalyzer.analyzeImage(selectedImage);
       setNutritionData(result);
     } catch (err) {
