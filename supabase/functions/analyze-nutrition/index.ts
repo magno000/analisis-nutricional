@@ -165,8 +165,24 @@ Instrucciones específicas:
     const content = openaiData.choices[0].message.content;
     
     try {
+      // Limpiar la respuesta de OpenAI removiendo markdown code blocks
+      let cleanContent = content.trim();
+      
+      // Remover ```json al inicio
+      if (cleanContent.startsWith('```json')) {
+        cleanContent = cleanContent.substring(7);
+      }
+      
+      // Remover ``` al final
+      if (cleanContent.endsWith('```')) {
+        cleanContent = cleanContent.substring(0, cleanContent.length - 3);
+      }
+      
+      // Limpiar espacios en blanco adicionales
+      cleanContent = cleanContent.trim();
+      
       // Parsear la respuesta JSON de OpenAI
-      const nutritionData: NutritionAnalysis = JSON.parse(content);
+      const nutritionData: NutritionAnalysis = JSON.parse(cleanContent);
       
       // Validar que todos los campos requeridos estén presentes
       const requiredFields = ['name', 'weight', 'calories', 'protein', 'fat', 'carbs', 'confidence'];
