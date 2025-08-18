@@ -50,7 +50,7 @@ Deno.serve(async (req: Request) => {
     
     if (!openaiApiKey) {
       return new Response(
-        JSON.stringify({ error: "OpenAI API key not configured" }),
+        JSON.stringify({ error: "OpenAI API key not configured in environment variables" }),
         {
           status: 500,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
