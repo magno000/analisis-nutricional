@@ -3,6 +3,7 @@ import { ImageUpload } from './ImageUpload';
 import { LoadingSpinner } from './LoadingSpinner';
 import { NutritionCard } from './NutritionCard';
 import { Search, ArrowLeft, Camera, Lightbulb, Utensils } from 'lucide-react';
+import { Heart, TrendingUp, Shield } from 'lucide-react';
 import { nutritionAnalyzer } from '../utils/nutritionAnalyzer';
 
 interface NutritionData {
@@ -12,6 +13,14 @@ interface NutritionData {
   protein: number;
   fat: number;
   carbs: number;
+  glycemicIndex?: number;
+  glycemicLoad?: number;
+  fiber?: number;
+  sugar?: number;
+  sodium?: number;
+  healthScore?: number;
+  diabeticFriendly?: boolean;
+  recommendations?: string[];
 }
 
 export const HomePage: React.FC = () => {
@@ -109,14 +118,14 @@ export const HomePage: React.FC = () => {
       {/* Hero Section */}
       <div className="text-center space-y-4 py-8">
         <h1 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight">
-          Identifica tu Comida y sus{' '}
+          Análisis Nutricional Completo{' '}
           <span className="bg-gradient-to-r from-emerald-500 to-blue-500 bg-clip-text text-transparent">
-            Valores Nutricionales
+            para Diabéticos
           </span>
         </h1>
         <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
-          Usa inteligencia artificial para analizar cualquier plato y obtener 
-          información nutricional detallada al instante
+          Obtén información completa sobre índice glucémico, carga glucémica y 
+          recomendaciones personalizadas para el control de la diabetes
         </p>
       </div>
 
@@ -187,7 +196,8 @@ export const HomePage: React.FC = () => {
       )}
 
       {/* Tips */}
-      <div className="bg-gradient-to-r from-blue-50 to-emerald-50 rounded-2xl p-6 border border-blue-100">
+      <div className="grid md:grid-cols-2 gap-6">
+        <div className="bg-gradient-to-r from-blue-50 to-emerald-50 rounded-2xl p-6 border border-blue-100">
         <div className="flex items-start space-x-3">
           <div className="bg-blue-100 p-2 rounded-lg">
             <Lightbulb size={20} className="text-blue-600" />
@@ -201,6 +211,25 @@ export const HomePage: React.FC = () => {
               <li>• Asegúrate de que la comida esté bien iluminada</li>
               <li>• Incluye el plato completo en la imagen</li>
             </ul>
+          </div>
+        </div>
+      </div>
+        
+        <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-6 border border-purple-100">
+          <div className="flex items-start space-x-3">
+            <div className="bg-purple-100 p-2 rounded-lg">
+              <Heart size={20} className="text-purple-600" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-gray-900 mb-2">
+                Información para Diabéticos
+              </h3>
+              <ul className="text-sm text-gray-700 space-y-1">
+                <li>• Índice glucémico: Bajo (&lt;55), Medio (55-70), Alto (&gt;70)</li>
+                <li>• Carga glucémica: Baja (&lt;10), Media (10-20), Alta (&gt;20)</li>
+                <li>• Recomendaciones personalizadas para cada plato</li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>
@@ -230,19 +259,19 @@ export const HomePage: React.FC = () => {
       <div className="grid md:grid-cols-3 gap-6 pt-12">
         {[
           {
-            icon: Camera,
-            title: 'Análisis Visual',
-            description: 'Sube una foto y nuestra IA identificará automáticamente los alimentos',
+            icon: TrendingUp,
+            title: 'Índice Glucémico',
+            description: 'Conoce cómo cada alimento afectará tus niveles de glucosa en sangre',
           },
           {
-            icon: Search,
-            title: 'Identificación Precisa',
-            description: 'Reconocimiento avanzado de platos y ingredientes con alta precisión',
+            icon: Heart,
+            title: 'Análisis Completo',
+            description: 'Fibra, azúcares, sodio y puntuación de salud para decisiones informadas',
           },
           {
-            icon: Utensils,
-            title: 'Datos Nutricionales',
-            description: 'Información completa de calorías, proteínas, grasas y carbohidratos',
+            icon: Shield,
+            title: 'Recomendaciones',
+            description: 'Consejos específicos para personas diabéticas y control glucémico',
           },
         ].map((feature, index) => {
           const Icon = feature.icon;

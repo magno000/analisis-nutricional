@@ -12,6 +12,14 @@ interface NutritionAnalysis {
   fat: number;
   carbs: number;
   confidence: number;
+  glycemicIndex: number;
+  glycemicLoad: number;
+  fiber: number;
+  sugar: number;
+  sodium: number;
+  healthScore: number;
+  diabeticFriendly: boolean;
+  recommendations: string[];
 }
 
 Deno.serve(async (req: Request) => {
@@ -59,7 +67,7 @@ Deno.serve(async (req: Request) => {
     }
 
     // Preparar el prompt para OpenAI
-    const prompt = `Analiza esta imagen de comida y proporciona la siguiente información nutricional en formato JSON exacto:
+    const prompt = `Analiza esta imagen de comida y proporciona información nutricional completa, especialmente útil para personas diabéticas, en formato JSON exacto:
 
 {
   "name": "Nombre específico del plato o alimentos identificados",
@@ -68,7 +76,15 @@ Deno.serve(async (req: Request) => {
   "protein": número_gramos_proteína,
   "fat": número_gramos_grasas,
   "carbs": número_gramos_carbohidratos,
-  "confidence": número_entre_0_y_1_nivel_confianza
+  "confidence": número_entre_0_y_1_nivel_confianza,
+  "glycemicIndex": número_entre_0_y_100_índice_glucémico_promedio,
+  "glycemicLoad": número_carga_glucémica_calculada,
+  "fiber": número_gramos_fibra_dietética,
+  "sugar": número_gramos_azúcares_totales,
+  "sodium": número_miligramos_sodio,
+  "healthScore": número_entre_0_y_100_puntuación_saludable,
+  "diabeticFriendly": boolean_si_es_apropiado_para_diabéticos,
+  "recommendations": ["array", "de", "recomendaciones", "para", "diabéticos"]
 }
 
 Instrucciones específicas:
@@ -78,6 +94,17 @@ Instrucciones específicas:
 - Sé preciso con los nombres de los platos (ej: "Ensalada César con Pollo" en lugar de solo "ensalada")
 - Si hay múltiples alimentos, incluye todos en el nombre y suma los valores nutricionales
 - El nivel de confianza debe reflejar qué tan seguro estás de la identificación
+
+Para información específica para diabéticos:
+- Índice glucémico: Promedio ponderado de todos los carbohidratos presentes
+- Carga glucémica: (Índice glucémico × gramos de carbohidratos) / 100
+- Fibra: Incluye fibra soluble e insoluble
+- Azúcares: Azúcares naturales y añadidos
+- Sodio: Contenido total de sodio en miligramos
+- Puntuación de salud: 0-100 basado en densidad nutricional, procesamiento, etc.
+- Apto para diabéticos: true si IG<55, CG<10, alto en fibra, bajo en azúcares añadidos
+- Recomendaciones: 2-4 consejos específicos para personas diabéticas sobre este plato
+
 - Responde ÚNICAMENTE con el JSON, sin texto adicional`;
 
     // Llamar a la API de OpenAI
@@ -185,7 +212,11 @@ Instrucciones específicas:
       const nutritionData: NutritionAnalysis = JSON.parse(cleanContent);
       
       // Validar que todos los campos requeridos estén presentes
-      const requiredFields = ['name', 'weight', 'calories', 'protein', 'fat', 'carbs', 'confidence'];
+      const requiredFields = [
+        'name', 'weight', 'calories', 'protein', 'fat', 'carbs', 'confidence',
+        'glycemicIndex', 'glycemicLoad', 'fiber', 'sugar', 'sodium', 'healthScore',
+        'diabeticFriendly', 'recommendations'
+      ];
       const missingFields = requiredFields.filter(field => !(field in nutritionData));
       
       if (missingFields.length > 0) {
@@ -203,7 +234,10 @@ Instrucciones específicas:
       }
 
       // Validar que los valores numéricos sean válidos
-      const numericFields = ['weight', 'calories', 'protein', 'fat', 'carbs', 'confidence'];
+      const numericFields = [
+        'weight', 'calories', 'protein', 'fat', 'carbs', 'confidence',
+        'glycemicIndex', 'glycemicLoad', 'fiber', 'sugar', 'sodium', 'healthScore'
+      ];
       for (const field of numericFields) {
         if (typeof nutritionData[field as keyof NutritionAnalysis] !== 'number' || 
             isNaN(nutritionData[field as keyof NutritionAnalysis] as number)) {

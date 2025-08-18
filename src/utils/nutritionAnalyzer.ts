@@ -6,6 +6,14 @@ interface NutritionData {
   fat: number;
   carbs: number;
   confidence?: number;
+  glycemicIndex?: number;
+  glycemicLoad?: number;
+  fiber?: number;
+  sugar?: number;
+  sodium?: number;
+  healthScore?: number;
+  diabeticFriendly?: boolean;
+  recommendations?: string[];
 }
 
 export class NutritionAnalyzer {
