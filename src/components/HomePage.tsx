@@ -128,15 +128,31 @@ export const HomePage: React.FC = () => {
               <div className="text-red-600 font-medium">Error:</div>
               <div className="ml-2 text-red-700">{error}</div>
             </div>
-            {/* NUEVO: Mostrar información de debug */}
-            <div className="mt-2 text-xs text-red-600">
-              <p>💡 Posibles causas:</p>
-              <ul className="ml-4 list-disc">
-                <li>Variables de entorno de Supabase no configuradas</li>
-                <li>Función Edge de Supabase no desplegada</li>
-                <li>API Key de OpenAI no configurada</li>
-              </ul>
-            </div>
+            {/* Mostrar ayuda específica para errores de créditos */}
+            {error.includes('Sin créditos en OpenAI') && (
+              <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                <div className="text-sm text-yellow-800">
+                  <p className="font-medium mb-1">💡 ¿Cómo solucionarlo?</p>
+                  <ol className="list-decimal ml-4 space-y-1">
+                    <li>Ve a <a href="https://platform.openai.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">platform.openai.com</a></li>
+                    <li>Inicia sesión en tu cuenta</li>
+                    <li>Ve a "Billing" y añade créditos</li>
+                    <li>Vuelve aquí e intenta de nuevo</li>
+                  </ol>
+                </div>
+              </div>
+            )}
+            {/* Información de debug para otros errores */}
+            {!error.includes('Sin créditos en OpenAI') && (
+              <div className="mt-2 text-xs text-red-600">
+                <p>💡 Posibles causas:</p>
+                <ul className="ml-4 list-disc">
+                  <li>Variables de entorno de Supabase no configuradas</li>
+                  <li>Función Edge de Supabase no desplegada</li>
+                  <li>API Key de OpenAI no configurada</li>
+                </ul>
+              </div>
+            )}
             <button
               onClick={() => setError(null)}
               className="mt-3 text-sm text-red-600 hover:text-red-800 underline self-start"
@@ -147,26 +163,28 @@ export const HomePage: React.FC = () => {
         </div>
       )}
 
-      {/* NUEVO: Estado de configuración */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-        <div className="flex items-start space-x-3">
-          <div className="bg-blue-100 p-2 rounded-lg">
-            <Lightbulb size={20} className="text-blue-600" />
-          </div>
-          <div>
-            <h3 className="font-semibold text-gray-900 mb-2">Estado de Configuración</h3>
-            <div className="text-sm text-gray-700 space-y-1">
-              <p>• Supabase URL: {import.meta.env.VITE_SUPABASE_URL ? '✅ Configurada' : '❌ No configurada'}</p>
-              <p>• Supabase Key: {import.meta.env.VITE_SUPABASE_ANON_KEY ? '✅ Configurada' : '❌ No configurada'}</p>
+      {/* Estado de configuración - solo mostrar si no hay error de créditos */}
+      {!error?.includes('Sin créditos en OpenAI') && (
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <div className="flex items-start space-x-3">
+            <div className="bg-blue-100 p-2 rounded-lg">
+              <Lightbulb size={20} className="text-blue-600" />
             </div>
-            {(!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY) && (
-              <div className="mt-2 text-xs text-blue-700 bg-blue-100 p-2 rounded">
-                <p>⚠️ Necesitas configurar las variables de entorno en tu archivo .env</p>
+            <div>
+              <h3 className="font-semibold text-gray-900 mb-2">Estado de Configuración</h3>
+              <div className="text-sm text-gray-700 space-y-1">
+                <p>• Supabase URL: {import.meta.env.VITE_SUPABASE_URL ? '✅ Configurada' : '❌ No configurada'}</p>
+                <p>• Supabase Key: {import.meta.env.VITE_SUPABASE_ANON_KEY ? '✅ Configurada' : '❌ No configurada'}</p>
               </div>
-            )}
+              {(!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY) && (
+                <div className="mt-2 text-xs text-blue-700 bg-blue-100 p-2 rounded">
+                  <p>⚠️ Necesitas configurar las variables de entorno en tu archivo .env</p>
+                </div>
+              )}
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Tips */}
       <div className="bg-gradient-to-r from-blue-50 to-emerald-50 rounded-2xl p-6 border border-blue-100">

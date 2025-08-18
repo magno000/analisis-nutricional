@@ -74,7 +74,23 @@ export class NutritionAnalyzer {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
+        
+        // Manejar errores específicos de OpenAI
+        if (errorData.errorType === 'quota_exceeded') {
+          throw new Error(
+            'Sin créditos en OpenAI: Necesitas recargar tu cuenta en platform.openai.com para continuar usando el servicio.'
+          );
+        }
+        
+        if (errorData.errorType === 'openai_error') {
+          throw new Error(
+            errorData.userMessage || 'Error del servicio de análisis. Inténtalo de nuevo más tarde.'
+          );
+        }
+        
+        // Error genérico del servidor
         throw new Error(
+          errorData.userMessage || 
           errorData.error || 
           `Error del servidor: ${response.status} ${response.statusText}`
         );

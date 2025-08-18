@@ -115,10 +115,33 @@ Instrucciones específicas:
     if (!openaiResponse.ok) {
       const errorData = await openaiResponse.text();
       console.error("OpenAI API Error:", errorData);
+      
+      // Parsear el error para obtener información específica
+      try {
+        const parsedError = JSON.parse(errorData);
+        if (parsedError.error?.code === 'insufficient_quota') {
+          return new Response(
+            JSON.stringify({ 
+              error: "Sin créditos en OpenAI",
+              userMessage: "La cuenta de OpenAI no tiene créditos suficientes. Por favor, recarga tu cuenta en platform.openai.com",
+              errorType: "quota_exceeded"
+            }),
+            {
+              status: 402,
+              headers: { ...corsHeaders, "Content-Type": "application/json" },
+            }
+          );
+        }
+      } catch (parseErr) {
+        // Si no se puede parsear, continuar con el error genérico
+      }
+      
       return new Response(
         JSON.stringify({ 
-          error: "Error analyzing image with OpenAI",
-          details: errorData 
+          error: "Error del servicio de OpenAI",
+          userMessage: "Hubo un problema con el servicio de análisis. Inténtalo de nuevo más tarde.",
+          details: errorData,
+          errorType: "openai_error"
         }),
         {
           status: 500,
