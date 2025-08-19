@@ -192,9 +192,40 @@ Para información específica para diabéticos:
     const content = openaiData.choices[0].message.content;
     
     try {
+      // Verificar si la respuesta es JSON válido
+      if (!content || typeof content !== 'string') {
+        return new Response(
+          JSON.stringify({ 
+            error: "Invalid response format from OpenAI",
+            userMessage: "El servicio de análisis devolvió una respuesta inválida. Inténtalo de nuevo.",
+            errorType: "invalid_response"
+          }),
+          {
+            status: 500,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          }
+        );
+      }
+
       // Limpiar la respuesta de OpenAI removiendo markdown code blocks
       let cleanContent = content.trim();
       
+      // Verificar si la respuesta parece ser JSON (debe empezar con '{')
+      if (!cleanContent.startsWith('{') && !cleanContent.startsWith('```json')) {
+        return new Response(
+          JSON.stringify({ 
+            error: "OpenAI returned non-JSON response",
+            userMessage: "El servicio de análisis no pudo procesar la imagen. La respuesta fue: " + content.substring(0, 200) + (content.length > 200 ? "..." : ""),
+            details: content,
+            errorType: "non_json_response"
+          }),
+          {
+            status: 500,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          }
+        );
+      }
+
       // Remover ```json al inicio
       if (cleanContent.startsWith('```json')) {
         cleanContent = cleanContent.substring(7);

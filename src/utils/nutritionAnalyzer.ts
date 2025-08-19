@@ -90,6 +90,18 @@ export class NutritionAnalyzer {
           );
         }
         
+        if (errorData.errorType === 'non_json_response') {
+          throw new Error(
+            errorData.userMessage || 'El servicio de análisis no pudo procesar la imagen correctamente.'
+          );
+        }
+        
+        if (errorData.errorType === 'invalid_response') {
+          throw new Error(
+            errorData.userMessage || 'Error en el formato de respuesta del servicio.'
+          );
+        }
+        
         if (errorData.errorType === 'openai_error') {
           throw new Error(
             errorData.userMessage || 'Error del servicio de análisis. Inténtalo de nuevo más tarde.'
