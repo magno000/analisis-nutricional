@@ -87,6 +87,26 @@ Deno.serve(async (req: Request) => {
   "recommendations": ["array", "de", "recomendaciones", "para", "diabéticos"]
 }
 
+IMPORTANTE: SIEMPRE debes responder con un objeto JSON válido. Si no puedes identificar la comida o no hay alimentos visibles en la imagen, usa esta estructura de respuesta:
+
+{
+  "name": "Imagen no identificable como alimento",
+  "weight": 0,
+  "calories": 0,
+  "protein": 0,
+  "fat": 0,
+  "carbs": 0,
+  "confidence": 0,
+  "glycemicIndex": 0,
+  "glycemicLoad": 0,
+  "fiber": 0,
+  "sugar": 0,
+  "sodium": 0,
+  "healthScore": 0,
+  "diabeticFriendly": false,
+  "recommendations": ["No se pudo identificar alimentos en la imagen", "Por favor, sube una imagen clara de comida"]
+}
+
 Instrucciones específicas:
 - Identifica todos los alimentos visibles en la imagen
 - Estima el peso total de la porción mostrada
@@ -94,6 +114,8 @@ Instrucciones específicas:
 - Sé preciso con los nombres de los platos (ej: "Ensalada César con Pollo" en lugar de solo "ensalada")
 - Si hay múltiples alimentos, incluye todos en el nombre y suma los valores nutricionales
 - El nivel de confianza debe reflejar qué tan seguro estás de la identificación
+- NUNCA respondas con texto conversacional como "Lo siento" o "No puedo ayudar"
+- SIEMPRE responde únicamente con el objeto JSON, incluso si no puedes identificar la comida
 
 Para información específica para diabéticos:
 - Índice glucémico: Promedio ponderado de todos los carbohidratos presentes
@@ -105,7 +127,7 @@ Para información específica para diabéticos:
 - Apto para diabéticos: true si IG<55, CG<10, alto en fibra, bajo en azúcares añadidos
 - Recomendaciones: 2-4 consejos específicos para personas diabéticas sobre este plato
 
-- Responde ÚNICAMENTE con el JSON, sin texto adicional`;
+- Responde ÚNICAMENTE con el JSON válido, sin texto adicional, comentarios o explicaciones`;
 
     // Llamar a la API de OpenAI
     const openaiResponse = await fetch("https://api.openai.com/v1/chat/completions", {
