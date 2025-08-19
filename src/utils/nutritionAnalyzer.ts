@@ -135,7 +135,15 @@ export class NutritionAnalyzer {
         protein: Math.round((data.protein || 0) * 10) / 10, // Redondear a 1 decimal
         fat: Math.round((data.fat || 0) * 10) / 10,
         carbs: Math.round((data.carbs || 0) * 10) / 10,
-        confidence: data.confidence || 0
+        confidence: data.confidence || 0,
+        glycemicIndex: data.glycemicIndex,
+        glycemicLoad: data.glycemicLoad,
+        fiber: data.fiber,
+        sugar: data.sugar,
+        sodium: data.sodium,
+        healthScore: data.healthScore,
+        diabeticFriendly: data.diabeticFriendly,
+        recommendations: data.recommendations || []
       };
 
     } catch (error) {
